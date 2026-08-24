@@ -80,7 +80,7 @@ export default function Checkout() {
   const jazzcashEnabled = settings.payment_jazzcash_enabled === '1'
 
   return (
-    <div style={{ padding: '48px 32px', maxWidth: 1000, margin: '0 auto' }}>
+    <div className="checkout-container" style={{ maxWidth: 1000, margin: '0 auto' }}>
       <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: 32 }}>
         Checkout Details
       </h1>

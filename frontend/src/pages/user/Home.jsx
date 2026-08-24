@@ -161,7 +161,7 @@ export default function Home() {
       )}
 
       {/* ── Catalog Listing Section ── */}
-      <section id="catalog" style={{ padding: '80px 40px', maxWidth: 1240, margin: '0 auto' }}>
+      <section id="catalog" className="responsive-container" style={{ maxWidth: 1240, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.4rem', fontWeight: 600 }}>
             Discover <span className="gold-accent">Elegance</span>
@@ -341,8 +341,8 @@ export default function Home() {
       </section>
 
       {/* ── About Us Section (Dynamic Settings Content) ── */}
-      <section id="about-section" style={{ padding: '90px 40px', background: 'rgba(255,255,255,0.01)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 60, alignItems: 'center' }}>
+      <section id="about-section" className="responsive-container" style={{ background: 'rgba(255,255,255,0.01)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
+        <div className="about-us-grid" style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div>
             <span className="gold-accent" style={{ textTransform: 'uppercase', letterSpacing: '0.12em', fontSize: '0.78rem', fontWeight: 700 }}>Our Legacy</span>
             <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.5rem', fontWeight: 600, color: 'var(--text-primary)', margin: '12px 0 20px' }}>
@@ -359,7 +359,7 @@ export default function Home() {
       </section>
 
       {/* ── Contact Us Section ── */}
-      <section id="contact-section" style={{ padding: '90px 40px', maxWidth: 840, margin: '0 auto' }}>
+      <section id="contact-section" className="responsive-container" style={{ maxWidth: 840, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <span className="gold-accent" style={{ textTransform: 'uppercase', letterSpacing: '0.12em', fontSize: '0.78rem', fontWeight: 700 }}>Inquiries</span>
           <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.4rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: 10 }}>Contact Boutique</h2>
@@ -374,7 +374,7 @@ export default function Home() {
           </div>
         )}
 
-        <form onSubmit={handleContactSubmit} className="card" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, padding: 32 }}>
+        <form onSubmit={handleContactSubmit} className="card home-contact-form">
           <div className="form-group">
             <label className="form-label">Your Name</label>
             <input type="text" className="form-input" value={contactForm.name} onChange={e => setContactForm(p => ({ ...p, name: e.target.value }))} required />

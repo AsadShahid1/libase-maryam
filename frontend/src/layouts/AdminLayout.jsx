@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import logoFallback from '@/assets/logo.jpg'
@@ -35,30 +36,66 @@ const navItems = [
 export default function AdminLayout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const handleLogout = async () => {
     await logout()
-    navigate('/login')
+    navigate('/')
   }
 
   const initials = user?.name?.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'A'
 
   return (
     <div className="admin-layout" style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-dark)' }}>
+      {/* Mobile Topbar */}
+      <div className="mobile-admin-header" style={{
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '12px 16px',
+        background: '#ffffff',
+        borderBottom: '1px solid var(--border)',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 45
+      }}>
+        <button onClick={() => setIsSidebarOpen(true)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', color: 'var(--text-primary)', cursor: 'pointer' }}>
+          ☰
+        </button>
+        <span style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, color: 'var(--text-primary)' }}>LibaseMaryam</span>
+        <div style={{ width: 24 }}></div> {/* spacer */}
+      </div>
+
+      {/* Sidebar Backdrop for Mobile */}
+      {isSidebarOpen && (
+        <div className="sidebar-backdrop" onClick={() => setIsSidebarOpen(false)} style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.4)',
+          zIndex: 48
+        }} />
+      )}
+
       {/* Sidebar */}
-      <aside className="sidebar" style={{ width: 260, background: 'var(--bg-sidebar)', display: 'flex', flexDirection: 'column', borderRight: '1px solid var(--border)' }}>
+      <aside className={`sidebar ${isSidebarOpen ? 'show-sidebar' : ''}`} style={{ width: 260, background: 'var(--bg-sidebar)', display: 'flex', flexDirection: 'column', borderRight: '1px solid var(--border)' }}>
         <div className="sidebar-header" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 24, borderBottom: '1px solid var(--border)' }}>
           <img src={logoFallback} alt="Boutique Logo" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--brand-400)' }} />
           <div>
             <div className="sidebar-logo-text" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: '1rem', color: 'var(--text-primary)' }}>LibaseMaryam</div>
             <div className="sidebar-logo-sub" style={{ fontSize: '0.72rem', color: 'var(--brand-500)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Boutique Admin</div>
           </div>
+          {/* Close button inside sidebar on mobile */}
+          <button className="mobile-admin-header" onClick={() => setIsSidebarOpen(false)} style={{ marginLeft: 'auto', background: 'none', border: 'none', fontSize: '1.2rem', color: 'var(--text-muted)', cursor: 'pointer' }}>
+            ✕
+          </button>
         </div>
 
         <nav className="sidebar-nav" style={{ flex: 1, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 4 }}>
           <div className="sidebar-section-label" style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, paddingLeft: 8 }}>Modules</div>
           {navItems.map(item => (
             <NavLink key={item.to} to={item.to} end={item.end}
+              onClick={() => setIsSidebarOpen(false)}
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
               style={({ isActive }) => ({
                 display: 'flex', alignItems: 'center', padding: '10px 14px', borderRadius: 8,

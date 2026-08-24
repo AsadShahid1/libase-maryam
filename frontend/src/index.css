@@ -356,17 +356,18 @@ tr:hover td { background: rgba(255,255,255,0.02); }
   background: #0b132a; /* Deep navy blue color from logo */
   backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 0 32px;
-  display: flex; align-items: center; height: 64px; gap: 32px;
+  padding: 0 40px;
+  display: flex; align-items: center; height: 74px; gap: 32px;
+  justify-content: space-between;
 }
-.navbar-logo { display: flex; align-items: center; gap: 10px; }
+.navbar-logo { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .navbar-logo-icon {
   width: 32px; height: 32px; border-radius: 7px;
   background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
   display: flex; align-items: center; justify-content: center;
   font-size: 14px;
 }
-.navbar-logo-text { font-size: 1rem; font-weight: 800; color: #fff; }
+.navbar-logo-text { font-size: 1rem; font-weight: 800; color: #fff; white-space: nowrap; }
 .navbar-nav { display: flex; align-items: center; gap: 4px; flex: 1; }
 .navbar-link {
   padding: 6px 14px; border-radius: var(--radius-sm);
@@ -482,13 +483,46 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
 /* ── Responsive ─────────────────────────────────────── */
+.sidebar {
+  transition: transform 0.3s ease;
+}
+.sidebar.show-sidebar {
+  transform: translateX(0) !important;
+}
+.mobile-admin-header {
+  display: none;
+}
+@media (max-width: 1024px) {
+  .navbar-nav,
+  .navbar-search {
+    display: none !important;
+  }
+  .mobile-menu-toggle {
+    display: block !important;
+  }
+}
 @media (max-width: 768px) {
   .sidebar { transform: translateX(-100%); }
-  .admin-main { margin-left: 0; }
+  .admin-main { margin-left: 0 !important; padding: 24px 16px !important; }
   .page-content { padding: 20px 16px; }
   .topbar { padding: 12px 16px; }
   .hero { padding: 60px 20px; }
   .navbar { padding: 0 16px; gap: 16px; }
+  .mobile-admin-header {
+    display: flex !important;
+  }
+  .admin-main {
+    padding-top: 76px !important;
+  }
+  .boutique-hero-content {
+    padding: 24px 16px !important;
+    margin: 16px !important;
+  }
+  .boutique-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important;
+    gap: 16px !important;
+    padding: 24px 16px !important;
+  }
 }
 
 @keyframes slideLeft {
@@ -592,6 +626,215 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 
 .product-card:hover .product-card-overlay {
   opacity: 1;
+}
+
+/* Storefront Grid Layout Responsiveness */
+.products-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 48px;
+  align-items: center;
+}
+.product-detail-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 48px;
+  align-items: start;
+}
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1.9fr;
+  gap: 40px;
+}
+.contact-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.checkout-container {
+  padding: 48px 32px;
+}
+
+@media (max-width: 768px) {
+  .products-grid,
+  .about-grid,
+  .product-detail-grid,
+  .contact-grid {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+  .contact-form-row {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .checkout-container {
+    padding: 24px 16px !important;
+  }
+  .navbar {
+    padding: 0 16px !important;
+    gap: 16px !important;
+  }
+  .navbar-logo-text,
+  .navbar-logo-tagline {
+    display: none !important;
+  }
+  .login-btn-text {
+    display: none !important;
+  }
+  .login-btn-icon {
+    display: inline !important;
+  }
+  .navbar-login-btn {
+    padding: 8px !important;
+    border-radius: 50% !important;
+    width: 38px !important;
+    height: 38px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 38px !important;
+    font-size: 1.1rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0 12px !important;
+    gap: 8px !important;
+  }
+  .navbar-actions {
+    gap: 8px !important;
+  }
+  .navbar-bag-text,
+  .navbar-user-name {
+    display: none !important;
+  }
+}
+
+/* Responsive Grid and Padding Containers */
+.responsive-container {
+  padding: 80px 40px;
+}
+.about-us-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 60px;
+  align-items: center;
+}
+.home-contact-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 32px;
+}
+
+@media (max-width: 768px) {
+  .responsive-container {
+    padding: 40px 16px !important;
+  }
+  .about-us-grid {
+    gap: 32px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-contact-form {
+    grid-template-columns: 1fr !important;
+    padding: 20px !important;
+    gap: 16px !important;
+  }
+  .home-contact-form .form-group {
+    grid-column: span 1 !important;
+  }
+}
+
+/* Luxury Website Preloader styles */
+.site-preloader {
+  position: fixed;
+  inset: 0;
+  background: #0b132a; /* Same deep navy blue */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+  visibility: visible;
+}
+
+.site-preloader.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.preloader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.preloader-logo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #d4af37;
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+  animation: logo-pulse 1.8s infinite ease-in-out;
+}
+
+.preloader-spinner {
+  width: 36px;
+  height: 36px;
+  border: 2px solid rgba(212, 175, 55, 0.15);
+  border-top-color: #d4af37;
+  border-radius: 50%;
+  animation: preloader-spin 1s linear infinite;
+}
+
+.preloader-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem;
+  color: #fff;
+  letter-spacing: 0.15em;
+  font-weight: 600;
+  margin-top: 8px;
+  animation: text-pulse 1.8s infinite ease-in-out;
+  text-transform: uppercase;
+}
+
+@keyframes logo-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.35);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 40px rgba(212, 175, 55, 0.65);
+  }
+}
+
+@keyframes text-pulse {
+  0%, 100% {
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes preloader-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 

@@ -10,7 +10,7 @@ export default function About() {
   const companyName = settings.company_name || 'Libas-E-Maryam'
 
   return (
-    <div style={{ padding: '60px 20px', background: 'var(--bg-light)', minHeight: 'calc(100vh - 74px)' }}>
+    <div className="responsive-container" style={{ background: 'var(--bg-light)', minHeight: 'calc(100vh - 74px)' }}>
       <div style={{ maxWidth: 960, margin: '0 auto' }}>
         
         {/* Page Header */}
@@ -23,7 +23,7 @@ export default function About() {
         </div>
 
         {/* Brand Story Presentation */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 48, alignItems: 'center' }}>
+        <div className="about-grid">
           
           {/* Image Container with Elegant Border */}
           <div style={{ position: 'relative' }}>

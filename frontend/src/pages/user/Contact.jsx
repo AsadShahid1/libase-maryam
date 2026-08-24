@@ -24,7 +24,7 @@ export default function Contact() {
   }
 
   return (
-    <div style={{ padding: '60px 20px', background: 'var(--bg-light)', minHeight: 'calc(100vh - 74px)' }}>
+    <div className="responsive-container" style={{ background: 'var(--bg-light)', minHeight: 'calc(100vh - 74px)' }}>
       <div style={{ maxWidth: 1000, margin: '0 auto' }}>
         
         {/* Page Header */}
@@ -39,7 +39,7 @@ export default function Contact() {
           <div style={{ width: 60, height: 2, background: '#d4af37', margin: '20px auto 0' }} />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1.9fr', gap: 40 }}>
+        <div className="contact-grid">
           
           {/* Left Column: Contact Details Cards */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -87,7 +87,7 @@ export default function Contact() {
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
               
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div className="contact-form-row">
                 <div className="form-group">
                   <label className="form-label" style={{ color: 'var(--text-secondary)' }}>Your Name</label>
                   <input

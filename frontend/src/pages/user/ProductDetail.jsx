@@ -133,7 +133,7 @@ export default function ProductDetail() {
   }
 
   return (
-    <div style={{ background: 'var(--bg-light)', minHeight: 'calc(100vh - 74px)', padding: '40px 20px' }}>
+    <div className="responsive-container" style={{ background: 'var(--bg-light)', minHeight: 'calc(100vh - 74px)' }}>
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
         
         {/* Breadcrumb Navigation */}
@@ -143,7 +143,7 @@ export default function ProductDetail() {
           <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{product.name}</span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 48, alignItems: 'start' }}>
+        <div className="product-detail-grid">
           
           {/* ── Left Column: Lookbook Gallery & Zoom Frame ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

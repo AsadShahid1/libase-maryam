@@ -13,6 +13,8 @@ export default function UserLayout() {
   const [settings, setSettings] = useState({})
   const [categories, setCategories] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isPreloading, setIsPreloading] = useState(true)
   const [suggestions, setSuggestions] = useState([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [showDropdown, setShowDropdown] = useState(false) // Categories dropdown state
@@ -72,9 +74,16 @@ export default function UserLayout() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsPreloading(false)
+    }, 1800)
+    return () => clearTimeout(timer)
+  }, [])
+
   const handleLogout = async () => {
     await logout()
-    navigate('/login')
+    navigate('/')
   }
 
   const handleSearchSubmit = (e) => {
@@ -131,16 +140,26 @@ export default function UserLayout() {
   const logoImg = settings.company_logo || logoFallback
 
   return (
-    <div className="user-layout">
+    <>
+      {/* ── Luxury Preloader ── */}
+      <div className={`site-preloader ${!isPreloading ? 'fade-out' : ''}`}>
+        <div className="preloader-content">
+          <img src={logoImg} alt="LibaseMaryam Logo" className="preloader-logo" />
+          <div className="preloader-spinner"></div>
+          <p className="preloader-text">{settings.company_name || 'LIBAS-E-MARYAM'}</p>
+        </div>
+      </div>
+
+      <div className="user-layout">
       {/* ── Luxury Header ── */}
-      <header className="navbar" style={{ height: 74, padding: '0 40px', background: '#0b132a', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+      <header className="navbar" style={{ height: 74, background: '#0b132a', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
         <Link to="/" className="navbar-logo" style={{ gap: 14 }}>
           <img src={logoImg} alt="LibaseMaryam Logo" style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', border: '1px solid #d4af37' }} />
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span className="navbar-logo-text" style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.25rem', letterSpacing: '0.04em', color: '#fff', fontWeight: 600 }}>
               {settings.company_name || 'Libas-E-Maryam'}
             </span>
-            <span style={{ fontSize: '0.65rem', color: '#d4af37', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600 }}>
+            <span className="navbar-logo-tagline" style={{ fontSize: '0.65rem', color: '#d4af37', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600 }}>
               {settings.company_tagline || 'A Tradition of Elegance'}
             </span>
           </div>
@@ -201,7 +220,7 @@ export default function UserLayout() {
         </nav>
 
         {/* Search Bar with Live Suggestions */}
-        <div style={{ position: 'relative', flex: 1, maxWidth: 300, margin: '0 24px' }} ref={suggestionRef}>
+        <div className="navbar-search" style={{ position: 'relative', flex: 1, maxWidth: 300, margin: '0 24px' }} ref={suggestionRef}>
           <form onSubmit={handleSearchSubmit} style={{ display: 'flex', position: 'relative' }}>
             <input
               type="text"
@@ -262,7 +281,7 @@ export default function UserLayout() {
         <div className="navbar-actions">
           {/* Cart Icon Button with Count badge */}
           <button className="btn btn-ghost btn-sm" onClick={() => setIsCartOpen(true)} style={{ position: 'relative', padding: '8px 12px' }}>
-            👜 <span style={{ marginLeft: 4 }}>Bag</span>
+            👜 <span className="navbar-bag-text" style={{ marginLeft: 4 }}>Bag</span>
             {cartCount > 0 && (
               <span style={{
                 position: 'absolute', top: -5, right: -5,
@@ -306,7 +325,7 @@ export default function UserLayout() {
                 }}>
                   {user.name?.charAt(0)?.toUpperCase() || '👤'}
                 </span>
-                <span style={{ maxWidth: 80, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span className="navbar-user-name" style={{ maxWidth: 80, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {user.name?.split(' ')[0]}
                 </span>
                 <span style={{ fontSize: '0.65rem', opacity: 0.6 }}>▾</span>
@@ -388,10 +407,129 @@ export default function UserLayout() {
               )}
             </div>
           ) : (
-            <button className="btn btn-primary btn-sm" onClick={() => setIsLoginModalOpen(true)} style={{ background: 'linear-gradient(135deg, #d4af37, #aa820a)', border: 'none', color: '#000', fontWeight: 700, whiteSpace: 'nowrap' }}>Sign in</button>
+            <button className="btn btn-primary btn-sm navbar-login-btn" onClick={() => setIsLoginModalOpen(true)} style={{ background: 'linear-gradient(135deg, #d4af37, #aa820a)', border: 'none', color: '#000', fontWeight: 700, whiteSpace: 'nowrap' }}>
+              <span className="login-btn-text">Sign in</span>
+              <span className="login-btn-icon" style={{ display: 'none' }}>👤</span>
+            </button>
           )}
         </div>
+
+        {/* Mobile Hamburger Button */}
+        <button
+          className="mobile-menu-toggle"
+          onClick={() => setIsMobileMenuOpen(prev => !prev)}
+          style={{
+            display: 'none',
+            background: 'none',
+            border: 'none',
+            fontSize: '1.6rem',
+            color: '#fff',
+            cursor: 'pointer',
+            padding: 4,
+            marginLeft: 12
+          }}
+        >
+          ☰
+        </button>
       </header>
+
+      {/* Mobile Drawer Backdrop */}
+      {isMobileMenuOpen && (
+        <div className="mobile-drawer-backdrop" onClick={() => setIsMobileMenuOpen(false)} style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.5)',
+          zIndex: 999,
+          backdropFilter: 'blur(4px)'
+        }} />
+      )}
+
+      {/* Mobile Drawer Navigation Sidebar */}
+      <div className={`mobile-drawer ${isMobileMenuOpen ? 'open' : ''}`} style={{
+        position: 'fixed',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        width: 280,
+        background: '#0b132a',
+        zIndex: 1000,
+        boxShadow: '-4px 0 24px rgba(0,0,0,0.5)',
+        display: 'flex',
+        flexDirection: 'column',
+        padding: 24,
+        gap: 20,
+        transform: isMobileMenuOpen ? 'translateX(0)' : 'translateX(100%)',
+        transition: 'transform 0.3s ease',
+        overflowY: 'auto'
+      }}>
+        {/* Drawer Header with Close button */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <span style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.2rem', color: '#fff', fontWeight: 700 }}>Menu</span>
+          <button onClick={() => setIsMobileMenuOpen(false)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', color: '#fff', cursor: 'pointer' }}>
+            ✕
+          </button>
+        </div>
+
+        {/* Search bar inside drawer on mobile */}
+        <div style={{ position: 'relative', width: '100%' }}>
+          <form onSubmit={handleSearchSubmit} style={{ display: 'flex', position: 'relative' }}>
+            <input
+              type="text"
+              placeholder="Search collections..."
+              className="form-input"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              style={{
+                borderRadius: '99px',
+                padding: '10px 40px 10px 16px',
+                fontSize: '0.9rem',
+                border: '1px solid rgba(255,255,255,0.15)',
+                background: 'rgba(255,255,255,0.06)',
+                color: '#ffffff',
+                width: '100%'
+              }}
+            />
+            <button type="submit" style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem' }}>
+              🔍
+            </button>
+          </form>
+        </div>
+
+        <NavLink to="/" className={({ isActive }) => `navbar-link ${isActive ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)} style={{ fontSize: '1.1rem', padding: '8px 0' }} end>
+          Home
+        </NavLink>
+
+        <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }} />
+
+        <span style={{ fontSize: '0.8rem', color: '#d4af37', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>Categories</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, paddingLeft: 12 }}>
+          <Link to="/categories" onClick={() => setIsMobileMenuOpen(false)} style={{ fontSize: '0.95rem', color: '#fff' }}>
+            All Categories
+          </Link>
+          {categories.map(cat => (
+            <Link
+              key={cat.id}
+              to={`/products?category=${cat.slug}`}
+              onClick={() => setIsMobileMenuOpen(false)}
+              style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }}
+            >
+              {cat.name}
+            </Link>
+          ))}
+        </div>
+
+        <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }} />
+
+        <NavLink to="/products" className={({ isActive }) => `navbar-link ${isActive ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)} style={{ fontSize: '1.1rem', padding: '8px 0' }}>
+          Products
+        </NavLink>
+        <NavLink to="/about" className={({ isActive }) => `navbar-link ${isActive ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)} style={{ fontSize: '1.1rem', padding: '8px 0' }}>
+          About Us
+        </NavLink>
+        <NavLink to="/contact" className={({ isActive }) => `navbar-link ${isActive ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)} style={{ fontSize: '1.1rem', padding: '8px 0' }}>
+          Contact
+        </NavLink>
+      </div>
 
       {/* Main Page Content */}
       <main className="user-main">
@@ -587,5 +725,6 @@ export default function UserLayout() {
       )}
 
     </div>
+    </>
   )
 }

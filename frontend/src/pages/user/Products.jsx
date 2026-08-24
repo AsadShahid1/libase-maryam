@@ -76,8 +76,8 @@ export default function Products() {
   }
 
   return (
-    <div style={{ padding: '48px 40px', maxWidth: 1240, margin: '0 auto' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 40, alignItems: 'start' }}>
+    <div className="responsive-container" style={{ maxWidth: 1240, margin: '0 auto' }}>
+      <div className="products-grid">
         
         {/* ── Left Sidebar Filters ── */}
         <aside className="card" style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 24, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.015)' }}>
