@@ -38,7 +38,9 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->decimal('sale_price', 10, 2)->nullable();
             $table->boolean('is_on_sale')->default(false);
+            $table->boolean('is_featured')->default(false);
             $table->integer('stock')->default(0);
+            $table->string('sku')->nullable();
             $table->string('image')->nullable();
             $table->timestamps();
         });

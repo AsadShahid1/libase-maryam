@@ -1,398 +1,390 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useCart } from '@/contexts/CartContext'
-import { getShopProducts, submitContactMessage } from '@/api'
-import { router, Link, usePage } from '@inertiajs/react'
+import { submitContactMessage } from '@/api'
+import { Link, usePage } from '@inertiajs/react'
 import UserLayout from '@/layouts/UserLayout'
 import productSilk from '@/assets/product_silk.jpg'
 import productLawn from '@/assets/product_lawn.jpg'
 import productVelvet from '@/assets/product_velvet.jpg'
+import dress1 from '@/assets/libasemaryam1.png'
+import dress2 from '@/assets/libasemaryam2.png'
+import dress3 from '@/assets/libasemmaryam.png'
 
-export default function Home({ initialProducts = [], banners: initialBanners = [], brands: initialBrands = [], categories: initialCategories = [], filters = {} }) {
+export default function Home({
+  initialProducts = [],
+  banners: initialBanners = [],
+  brands: initialBrands = [],
+  categories: initialCategories = [],
+  filters = {}
+}) {
   const { addToCart } = useCart()
-  const { settings } = usePage().props
-  // Sync URL search/category from server-side filters prop
-  const [searchParams] = useState(filters)
-  
-  // Products & Filtering State
-  const [products, setProducts] = useState(initialProducts)
-  const [brands, setBrands] = useState(initialBrands)
-  const [banners, setBanners] = useState(initialBanners)
-  const [loading, setLoading] = useState(false)
-  
-  // Advanced Filter values
-  const [minPrice, setMinPrice] = useState('')
-  const [maxPrice, setMaxPrice] = useState('')
-  const [selectedSize, setSelectedSize] = useState('')
-  const [selectedColor, setSelectedColor] = useState('')
-  const [selectedBrand, setSelectedBrand] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState(filters.category || 'All')
-  const [showFilters, setShowFilters] = useState(false)
-  
-  // Banner Slide index
-  const [currentSlide, setCurrentSlide] = useState(0)
+  const { settings = {} } = usePage().props
 
-  // Contact Form State
-  const [contactForm, setContactForm] = useState({ name: '', email: '', subject: '', message: '' })
-  const [contactSuccess, setContactSuccess] = useState('')
-  const [contactLoading, setContactLoading] = useState(false)
+  const [products] = useState(initialProducts)
+  const [categories] = useState(initialCategories)
+  const [activeFaq, setActiveFaq] = useState(null)
 
-  // Fetch shop catalog based on filters
-  const loadCatalog = () => {
-    setLoading(true)
-    const activeSearch = searchParams.get('search') || ''
-    
-    const params = {
-      search: activeSearch,
-      category: selectedCategory !== 'All' ? selectedCategory : '',
-      brand: selectedBrand,
-      size: selectedSize,
-      color: selectedColor,
-      min_price: minPrice,
-      max_price: maxPrice
-    }
-    
-    getShopProducts(params)
-      .then(res => setProducts(res.data))
-      .catch(console.error)
-      .finally(() => setLoading(false))
+  // Boutique dress image fallback list
+  const boutiqueImages = [productVelvet, productSilk, productLawn, dress1, dress2, dress3]
+
+  const categoryImageMap = {
+    'velvet-festive': productVelvet,
+    'luxury-silk': productSilk,
+    'premium-lawn': productLawn,
+    'chiffon-organza': dress1,
+    'bridal-couture': dress2,
+    'pret-wear': dress3
   }
 
-  const [allColors, setAllColors] = useState(() => {
-    return Array.from(new Set(
-      initialProducts.flatMap(p => p.variants?.map(v => v.color) || [])
-    )).filter(Boolean)
-  })
+  // Newsletter form
+  const [newsletterEmail, setNewsletterEmail] = useState('')
+  const [newsletterSubscribed, setNewsletterSubscribed] = useState(false)
 
-  // Load unique colors dynamically when filters change
-  useEffect(() => {
-    getShopProducts()
-      .then(res => {
-        const colors = Array.from(new Set(
-          res.data.flatMap(p => p.variants?.map(v => v.color) || [])
-        )).filter(Boolean)
-        setAllColors(colors)
-      })
-      .catch(console.error)
-  }, [])
-
-  // Sync category state from filters prop
-  useEffect(() => {
-    if (filters.category) setSelectedCategory(filters.category)
-  }, [filters.category])
-
-  // Trigger catalog fetch whenever filter values change (client-side re-filter)
-  useEffect(() => {
-    loadCatalog()
-  }, [selectedCategory, selectedBrand, selectedSize, selectedColor, minPrice, maxPrice])
-
-  // Carousel slide timer
-  useEffect(() => {
-    if (banners.length === 0) return
-    const timer = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % banners.length)
-    }, 5000)
-    return () => clearInterval(timer)
-  }, [banners])
-
-  // Contact Form Submit Handler
-  const handleContactSubmit = async (e) => {
+  const handleNewsletterSubmit = (e) => {
     e.preventDefault()
-    setContactLoading(true)
-    setContactSuccess('')
-    try {
-      const res = await submitContactMessage(contactForm)
-      setContactSuccess(res.data.message)
-      setContactForm({ name: '', email: '', subject: '', message: '' })
-    } catch (err) {
-      setContactSuccess('Error submitting message. Please check details.')
-    } finally {
-      setContactLoading(false)
+    if (newsletterEmail) {
+      setNewsletterSubscribed(true)
+      setNewsletterEmail('')
     }
   }
 
-  const resetFilters = () => {
-    setMinPrice('')
-    setMaxPrice('')
-    setSelectedSize('')
-    setSelectedColor('')
-    setSelectedBrand('')
-    setSelectedCategory('All')
-    router.visit('/', { preserveState: false })
+  const toggleFaq = (index) => {
+    setActiveFaq(activeFaq === index ? null : index)
   }
+
+  const faqs = [
+    {
+      q: "What fabric quality is used in Libas-E-Maryam suits?",
+      a: "We use 100% pure raw silks, plush micro-velvet, organic handloom weaves, and luxury printed cotton lawn, all hand-embellished with zardozi tilla threadwork."
+    },
+    {
+      q: "Can I request custom stitching or bespoke sizing?",
+      a: "Yes! We offer customized tailoring services ranging from XS to custom bridal measurements. Contact our boutique concierge team for custom fitting requests."
+    },
+    {
+      q: "What is your delivery timeframe within Pakistan and globally?",
+      a: "Unstitched suits are delivered within 2-3 business days across Pakistan. Stitched bespoke ensembles take 7-10 days. Express international shipping is available worldwide."
+    },
+    {
+      q: "What payment options are accepted?",
+      a: "We accept Cash on Delivery (COD), Direct Bank Transfer, Visa / MasterCard, EasyPaisa, and JazzCash."
+    }
+  ]
 
   return (
     <div>
-      {/* ── Dynamic Luxury Hero Carousel ── */}
-      {banners.length > 0 && (
-        <section className="boutique-hero" style={{ backgroundImage: `url(${banners[currentSlide].image})`, transition: 'background-image 0.8s ease' }}>
-          <div className="boutique-hero-content">
-            <span className="hero-badge" style={{ background: 'rgba(212, 175, 55, 0.12)', color: '#d4af37', borderColor: 'rgba(212, 175, 55, 0.25)' }}>
-              👑 {banners[currentSlide].subtitle}
+
+      {/* ── 1. CINEMATIC HERO BANNER WITH BOUTIQUE DRESS SHOWCASE ── */}
+      <section style={{ position: 'relative', width: '100%', minHeight: '84vh', display: 'flex', alignItems: 'center', backgroundColor: '#0C1A2E', overflow: 'hidden' }}>
+        {/* Full-width Boutique Dress Hero Banner */}
+        <div style={{ position: 'absolute', inset: 0, opacity: 0.88 }}>
+          <img
+            src={productVelvet}
+            alt="Libas-E-Maryam Boutique Suits Showcase"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 25%' }}
+          />
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(90deg, rgba(12, 26, 46, 0.92) 0%, rgba(12, 26, 46, 0.60) 50%, rgba(12, 26, 46, 0.25) 100%)'
+          }} />
+        </div>
+
+        {/* Content Box */}
+        <div style={{ position: 'relative', zIndex: 10, maxWidth: 1320, width: '100%', margin: '0 auto', padding: '60px 24px' }}>
+          <div style={{ maxWidth: 640 }}>
+            <span className="eyebrow-badge" style={{ backgroundColor: 'rgba(230, 238, 248, 0.95)', color: '#1B365D', marginBottom: 20 }}>
+              FESTIVE LUXURY EDIT 2026
             </span>
-            <h1 className="hero-title" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: 'clamp(2.4rem, 5.5vw, 4rem)', margin: '14px 0 24px' }}>
-              {banners[currentSlide].title}
+            <h1 className="font-display" style={{ fontSize: '3.6rem', color: '#FFFFFF', lineHeight: 1.12, marginBottom: 20, fontWeight: 700 }}>
+              A Tradition of Unmatched Elegance.
             </h1>
-            <div style={{ display: 'flex', gap: 14, justifyContent: 'center' }}>
-              <a href="#catalog" className="btn btn-primary" style={{ background: 'linear-gradient(135deg, #d4af37, #aa820a)', border: 'none', color: '#000', fontWeight: 700 }}>
-                Explore Collection
-              </a>
-            </div>
-          </div>
-          {/* Slide Indicator Dots */}
-          <div style={{ position: 'absolute', bottom: 30, display: 'flex', gap: 8, zIndex: 10 }}>
-            {banners.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentSlide(i)}
-                style={{
-                  width: 10, height: 10, borderRadius: '50%', border: 'none',
-                  background: currentSlide === i ? '#d4af37' : 'rgba(255,255,255,0.3)',
-                  cursor: 'pointer'
-                }}
-              />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* ── Catalog Listing Section ── */}
-      <section id="catalog" style={{ padding: '80px 40px', maxWidth: 1240, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.4rem', fontWeight: 600 }}>
-            Discover <span className="gold-accent">Elegance</span>
-          </h2>
-          <p style={{ color: 'var(--text-secondary)', marginTop: 8, fontSize: '0.95rem' }}>
-            Traditional Eastern drapes crafted in luxurious silks, premium lawn, and royal festive velvets.
-          </p>
-
-          {/* Category Tabs */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 10, marginTop: 32, flexWrap: 'wrap' }}>
-            <button
-              onClick={() => { setSelectedCategory('All'); setSearchParams({}); }}
-              className="btn"
-              style={{
-                padding: '8px 20px', borderRadius: 99, fontSize: '0.85rem',
-                background: selectedCategory === 'All' ? 'linear-gradient(135deg, #d4af37, #aa820a)' : 'rgba(255,255,255,0.03)',
-                color: selectedCategory === 'All' ? '#000' : 'var(--text-secondary)',
-                border: selectedCategory === 'All' ? 'none' : '1px solid var(--border)',
-                fontWeight: 600
-              }}
-            >
-              All Items
-            </button>
-            {categories.map(cat => (
-              <button
-                key={cat.id}
-                onClick={() => { setSelectedCategory(cat.slug); setSearchParams({ category: cat.slug }); }}
-                className="btn"
-                style={{
-                  padding: '8px 20px', borderRadius: 99, fontSize: '0.85rem',
-                  background: selectedCategory === cat.slug ? 'linear-gradient(135deg, #d4af37, #aa820a)' : 'rgba(255,255,255,0.03)',
-                  color: selectedCategory === cat.slug ? '#000' : 'var(--text-secondary)',
-                  border: selectedCategory === cat.slug ? 'none' : '1px solid var(--border)',
-                  fontWeight: 600
-                }}
-              >
-                {cat.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Filters Toggle Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: 16, marginBottom: 28 }}>
-          <button className="btn btn-ghost btn-sm" onClick={() => setShowFilters(!showFilters)} style={{ color: '#d4af37', borderColor: '#d4af37' }}>
-            ⚙️ {showFilters ? 'Hide Filters' : 'Show Advanced Filters'}
-          </button>
-          {searchParams.get('search') && (
-            <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-              Showing results for "<strong>{searchParams.get('search')}</strong>"
-            </span>
-          )}
-          {(selectedBrand || selectedSize || selectedColor || minPrice || maxPrice) && (
-            <button className="btn btn-danger btn-sm" onClick={resetFilters}>Clear Filters ✕</button>
-          )}
-        </div>
-
-        {/* Collapsible Advanced Filters Drawer/Panel */}
-        {showFilters && (
-          <div className="card" style={{ padding: 24, marginBottom: 32, background: 'rgba(255,255,255,0.015)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 24 }}>
-            {/* Price Filter */}
-            <div className="form-group">
-              <label className="form-label" style={{ color: '#d4af37' }}>Price range (PKR)</label>
-              <div style={{ display: 'flex', gap: 10 }}>
-                <input type="number" placeholder="Min" className="form-input" value={minPrice} onChange={e => setMinPrice(e.target.value)} style={{ padding: 6 }} />
-                <input type="number" placeholder="Max" className="form-input" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} style={{ padding: 6 }} />
-              </div>
-            </div>
-
-            {/* Brand Filter */}
-            <div className="form-group">
-              <label className="form-label" style={{ color: '#d4af37' }}>Select Line</label>
-              <select className="form-input" value={selectedBrand} onChange={e => setSelectedBrand(e.target.value)} style={{ padding: 6 }}>
-                <option value="">All Brands</option>
-                {brands.map(b => <option key={b.id} value={b.slug}>{b.name}</option>)}
-              </select>
-            </div>
-
-            {/* Size Filter */}
-            <div className="form-group">
-              <label className="form-label" style={{ color: '#d4af37' }}>Size</label>
-              <select className="form-input" value={selectedSize} onChange={e => setSelectedSize(e.target.value)} style={{ padding: 6 }}>
-                <option value="">All Sizes</option>
-                <option value="S">Small (S)</option>
-                <option value="M">Medium (M)</option>
-                <option value="L">Large (L)</option>
-                <option value="XL">Extra Large (XL)</option>
-              </select>
-            </div>
-
-            {/* Color Filter */}
-            <div className="form-group">
-              <label className="form-label" style={{ color: '#d4af37' }}>Color</label>
-              <select className="form-input" value={selectedColor} onChange={e => setSelectedColor(e.target.value)} style={{ padding: 6 }}>
-                <option value="">All Colors</option>
-                {allColors.map(color => (
-                  <option key={color} value={color}>{color}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-        )}
-
-        {/* Catalog Product Grid */}
-        {loading ? (
-          <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}>
-            <div className="spinner" />
-          </div>
-        ) : products.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '80px 20px', color: 'var(--text-muted)' }}>
-            <div style={{ fontSize: '3rem', marginBottom: 16 }}>👘</div>
-            <p>No products match your current search/filters.</p>
-          </div>
-        ) : (
-          <div className="boutique-grid">
-            {products.map(product => (
-              <div key={product.id} className="product-card" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div className="product-image-container" style={{ border: '1px solid var(--border)' }}>
-                  <Link to={`/product/${product.id}`} style={{ display: 'block', height: '100%', width: '100%' }}>
-                    <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </Link>
-                  <div className="product-card-overlay">
-                    <button
-                      className="btn btn-primary"
-                      style={{ background: '#fff', color: '#000', width: '100%', fontWeight: 700 }}
-                      onClick={() => addToCart(product)}
-                      disabled={product.stock === 0}
-                    >
-                      {product.stock === 0 ? 'Out of Stock' : 'Add to Bag 👜'}
-                    </button>
-                  </div>
-                </div>
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#d4af37', fontWeight: 700 }}>
-                      {product.category?.name || product.category_id}
-                    </span>
-                    {product.stock === 0 && (
-                      <span className="badge badge-danger" style={{ fontSize: '0.65rem' }}>Out of Stock</span>
-                    )}
-                  </div>
-                  <h3 style={{ fontSize: '1.02rem', fontWeight: 600, margin: '8px 0', minHeight: 44, color: 'var(--text-primary)' }}>
-                    <Link to={`/product/${product.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
-                      {product.name}
-                    </Link>
-                  </h3>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 14, minHeight: 50 }}>
-                    {product.description?.slice(0, 100)}...
-                  </p>
-                  
-                  {/* Price display with sale tags */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      {product.is_on_sale ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <span style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)' }}>PKR {product.sale_price.toLocaleString()}</span>
-                          <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', textDecoration: 'line-through' }}>PKR {product.price.toLocaleString()}</span>
-                        </div>
-                      ) : (
-                        <span style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)' }}>PKR {product.price.toLocaleString()}</span>
-                      )}
-                    </div>
-                    <button
-                      className="btn btn-ghost btn-sm"
-                      onClick={() => addToCart(product)}
-                      disabled={product.stock === 0}
-                      style={{ padding: '6px 12px', fontSize: '0.78rem' }}
-                    >
-                      Buy
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* ── About Us Section (Dynamic Settings Content) ── */}
-      <section id="about-section" style={{ padding: '90px 40px', background: 'rgba(255,255,255,0.01)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 60, alignItems: 'center' }}>
-          <div>
-            <span className="gold-accent" style={{ textTransform: 'uppercase', letterSpacing: '0.12em', fontSize: '0.78rem', fontWeight: 700 }}>Our Legacy</span>
-            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.5rem', fontWeight: 600, color: 'var(--text-primary)', margin: '12px 0 20px' }}>
-              {settings.about_us_title || 'The Story of Libas-E-Maryam'}
-            </h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.8, marginBottom: 20 }}>
-              {settings.about_us_content || 'Traditional Eastern attire crafted with luxury textiles and delicate hand-embellished zari thread works. We specialize in bespoke tailors, velvet festive collections, and luxury silks.'}
+            <p style={{ color: '#E2E8F0', fontSize: '1.15rem', lineHeight: 1.6, marginBottom: 32, fontWeight: 400 }}>
+              Curated festive ensembles, velvet ghararas, raw silk anarkalis, and designer embroidered cotton lawn.
             </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
+              <Link href="/products" className="btn btn-primary btn-lg" style={{ borderRadius: 'var(--radius-pill)', fontWeight: 700 }}>
+                Shop New Arrivals →
+              </Link>
+              <Link href="/categories" className="btn btn-outline btn-lg" style={{ color: '#fff', borderColor: '#ffffff', borderRadius: 'var(--radius-pill)', backdropFilter: 'blur(4px)' }}>
+                Explore Collections
+              </Link>
+            </div>
           </div>
+        </div>
+      </section>
+
+      {/* ── 2. TRUST BADGES BAR ── */}
+      <section style={{ backgroundColor: '#FFFFFF', borderBottom: '1px solid var(--border-color)', padding: '28px 24px' }}>
+        <div style={{ maxWidth: 1320, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 24, textAlign: 'center' }}>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+            <div style={{ fontSize: '1.8rem' }}>🚚</div>
+            <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)' }}>Free Express Shipping</h4>
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>Complimentary nationwide shipping on orders over PKR 10,000.</p>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+            <div style={{ fontSize: '1.8rem' }}>✨</div>
+            <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)' }}>Bespoke Hand Tailoring</h4>
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>Hand-embroidered zardozi and custom fitting options available.</p>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+            <div style={{ fontSize: '1.8rem' }}>🔒</div>
+            <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)' }}>Safe & Easy Payment</h4>
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>Cash on Delivery, Bank Transfer, EasyPaisa & JazzCash.</p>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ── 3. FEATURED CATEGORIES (100% BOUTIQUE DRESS IMAGES ONLY) ── */}
+      <section style={{ padding: '80px 24px', maxWidth: 1320, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 44 }}>
+          <span className="eyebrow-badge">OUR COLLECTIONS</span>
+          <h2 className="section-title" style={{ marginTop: 10 }}>Explore Boutique Categories</h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>Select your preferred fabric edit and bespoke attire.</p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
+          {categories.slice(0, 4).map((cat, idx) => {
+            const catImage = (cat.image && !cat.image.includes('hero_reference'))
+              ? cat.image
+              : (categoryImageMap[cat.slug] || boutiqueImages[idx % boutiqueImages.length])
+
+            return (
+              <Link key={cat.id} href={`/products?category=${cat.slug}`} className="product-card" style={{ padding: 0, overflow: 'hidden', height: 380 }}>
+                <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+                  <img src={catImage} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(12,26,46,0.88) 100%)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-end',
+                    padding: 24
+                  }}>
+                    <h3 style={{ color: '#fff', fontSize: '1.35rem', fontWeight: 700, marginBottom: 4 }}>{cat.name}</h3>
+                    <p style={{ color: '#E2E8F0', fontSize: '0.82rem', marginBottom: 12 }}>{cat.description}</p>
+                    <span className="btn btn-outline btn-sm" style={{ color: '#fff', borderColor: '#fff', width: 'fit-content', borderRadius: 'var(--radius-pill)' }}>
+                      Explore Category →
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+      </section>
+
+      {/* ── 4. NEW ARRIVALS PRODUCT GRID (100% BOUTIQUE DRESS IMAGES ONLY) ── */}
+      <section style={{ padding: '80px 24px', backgroundColor: '#FFFFFF', borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)' }}>
+        <div style={{ maxWidth: 1320, margin: '0 auto' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 40 }}>
+            <div>
+              <span className="eyebrow-badge">NEW ARRIVALS</span>
+              <h2 className="section-title" style={{ marginTop: 10 }}>Boutique Suits Showcase</h2>
+            </div>
+            <Link href="/products" className="btn btn-outline btn-sm" style={{ borderRadius: 'var(--radius-pill)' }}>
+              View All Products →
+            </Link>
+          </div>
+
+          <div className="boutique-grid">
+            {products.map((item, idx) => {
+              const productImage = (item.image && !item.image.includes('hero_reference'))
+                ? item.image
+                : boutiqueImages[idx % boutiqueImages.length]
+
+              return (
+                <div key={item.id} className="product-card">
+                  <div className="product-image-container">
+                    <Link href={`/product/${item.id}`}>
+                      <img src={productImage} alt={item.name} />
+                    </Link>
+
+                    <button style={{ position: 'absolute', top: 12, right: 12, width: 32, height: 32, borderRadius: '50%', backgroundColor: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-sm)' }}>
+                      🤍
+                    </button>
+
+                    {item.is_on_sale && (
+                      <span className="badge badge-sale" style={{ position: 'absolute', top: 12, left: 12 }}>
+                        SALE
+                      </span>
+                    )}
+
+                    <div className="product-card-overlay">
+                      <button
+                        onClick={() => addToCart(item)}
+                        className="btn btn-primary btn-full btn-sm"
+                        style={{ borderRadius: 'var(--radius-pill)', fontWeight: 700 }}
+                      >
+                        Add to Cart 🛒
+                      </button>
+                    </div>
+                  </div>
+
+                  <div style={{ padding: '14px 4px 4px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                        <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--primary-sage)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                          {item.category?.name || 'Suit Collection'}
+                        </span>
+                        <div style={{ fontSize: '0.78rem', color: 'var(--accent-star)' }}>
+                          ★★★★★ <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>(4.9)</span>
+                        </div>
+                      </div>
+
+                      <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8, lineHeight: 1.3 }}>
+                        <Link href={`/product/${item.id}`}>{item.name}</Link>
+                      </h3>
+                    </div>
+
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 6 }}>
+                        {item.is_on_sale ? (
+                          <>
+                            <span style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)' }}>PKR {item.sale_price?.toLocaleString()}</span>
+                            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textDecoration: 'line-through' }}>PKR {item.price?.toLocaleString()}</span>
+                          </>
+                        ) : (
+                          <span style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)' }}>PKR {item.price?.toLocaleString()}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 5. BRAND EDITORIAL ("OUR BOUTIQUE LEGACY") ── */}
+      <section style={{ padding: '90px 24px', maxWidth: 1320, margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 60, alignItems: 'center' }}>
           <div>
-            <img src={settings.about_us_image || productSilk} alt="About Us Banner" style={{ width: '100%', maxHeight: 480, objectFit: 'cover', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }} />
+            <span className="eyebrow-badge" style={{ marginBottom: 16 }}>HERITAGE ARTISTRY</span>
+            <h2 className="font-display" style={{ fontSize: '2.8rem', lineHeight: 1.2, marginBottom: 20 }}>
+              The Story of Libas-E-Maryam
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1.02rem', lineHeight: 1.8, marginBottom: 24 }}>
+              Libas-E-Maryam brings you a heritage of traditional artistry. Specialized in high-end tailored lehengas, hand-worked velvet shawls, and premium embroidered cotton lawn, our mission is to create royal Eastern ensembles that reflect luxury and comfort.
+            </p>
+            <div style={{ display: 'flex', gap: 24, marginBottom: 32 }}>
+              <div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--primary-sage)' }}>100%</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Pure Fabrics</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--primary-sage)' }}>Hand Tilla</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Zari Needlework</div>
+              </div>
+            </div>
+            <Link href="/about" className="btn btn-dark btn-lg" style={{ borderRadius: 'var(--radius-pill)' }}>
+              Read Our Full Story →
+            </Link>
+          </div>
+
+          <div style={{ position: 'relative' }}>
+            <img
+              src={dress1}
+              alt="Libas-E-Maryam Boutique Suit Showcase"
+              style={{ width: '100%', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-lg)', border: '1px solid var(--border-color)' }}
+            />
           </div>
         </div>
       </section>
 
-      {/* ── Contact Us Section ── */}
-      <section id="contact-section" style={{ padding: '90px 40px', maxWidth: 840, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <span className="gold-accent" style={{ textTransform: 'uppercase', letterSpacing: '0.12em', fontSize: '0.78rem', fontWeight: 700 }}>Inquiries</span>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.4rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: 10 }}>Contact Boutique</h2>
-          <p style={{ color: 'var(--text-secondary)', marginTop: 8, fontSize: '0.92rem' }}>
-            Have customized sizing requests or delivery queries? Fill in the form and we will get back to you!
+      {/* ── 6. FEATURED BOUTIQUE FABRICS SHOWCASE ── */}
+      <section style={{ backgroundColor: 'var(--bg-subtle)', padding: '80px 24px', borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)' }}>
+        <div style={{ maxWidth: 1320, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 48 }}>
+            <span className="eyebrow-badge">PREMIUM TEXTILES</span>
+            <h2 className="section-title" style={{ marginTop: 10 }}>Hand-Embellished Boutique Fabrics</h2>
+            <p style={{ color: 'var(--text-secondary)' }}>Fine raw silk, heavy micro-velvet, and designer cotton lawn.</p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 32 }}>
+            <div className="product-card" style={{ padding: 0, overflow: 'hidden', height: 340 }}>
+              <img src={dress2} alt="Royal Velvet Showcase" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ position: 'absolute', bottom: 0, insetX: 0, padding: 24, background: 'linear-gradient(0deg, rgba(12,26,46,0.88) 0%, transparent 100%)', color: '#fff' }}>
+                <h3 style={{ color: '#fff', fontSize: '1.2rem' }}>Royal Velvet Festive Edit</h3>
+                <p style={{ fontSize: '0.82rem', color: '#E2E8F0' }}>Plush micro-velvet with gilded hand tilla embroidery.</p>
+              </div>
+            </div>
+
+            <div className="product-card" style={{ padding: 0, overflow: 'hidden', height: 340 }}>
+              <img src={dress3} alt="Luxury Raw Silk Showcase" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ position: 'absolute', bottom: 0, insetX: 0, padding: 24, background: 'linear-gradient(0deg, rgba(12,26,46,0.88) 0%, transparent 100%)', color: '#fff' }}>
+                <h3 style={{ color: '#fff', fontSize: '1.2rem' }}>Luxury Raw Silk Anarkali</h3>
+                <p style={{ fontSize: '0.82rem', color: '#E2E8F0' }}>Bespoke flared silhouettes with organza dupattas.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 7. FREQUENTLY ASKED QUESTIONS ── */}
+      <section style={{ backgroundColor: '#FFFFFF', padding: '80px 24px', borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)' }}>
+        <div style={{ maxWidth: 840, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 40 }}>
+            <span className="eyebrow-badge">HELP & INQUIRIES</span>
+            <h2 className="section-title" style={{ marginTop: 10 }}>Frequently Asked Questions</h2>
+          </div>
+
+          <div>
+            {faqs.map((faq, idx) => (
+              <div key={idx} className="faq-accordion-item">
+                <div className="faq-header" onClick={() => toggleFaq(idx)}>
+                  <span>{faq.q}</span>
+                  <span style={{ fontSize: '1.2rem', color: 'var(--primary-sage)' }}>{activeFaq === idx ? '−' : '+'}</span>
+                </div>
+                {activeFaq === idx && (
+                  <div className="faq-content">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 8. NEWSLETTER ── */}
+      <section style={{ padding: '80px 24px', backgroundColor: 'var(--primary-sage-light)' }}>
+        <div style={{ maxWidth: 640, margin: '0 auto', textAlign: 'center' }}>
+          <span className="eyebrow-badge" style={{ backgroundColor: '#fff', color: 'var(--primary-sage-dark)' }}>EXCLUSIVE UPDATES</span>
+          <h2 className="font-display" style={{ fontSize: '2.4rem', marginTop: 12, marginBottom: 12 }}>Stay in the Know</h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: 28 }}>
+            Be the first to discover new festive arrivals, private sales, and unstitched lawn drops.
           </p>
+
+          {newsletterSubscribed ? (
+            <div className="badge badge-new" style={{ padding: '12px 24px', fontSize: '0.9rem' }}>
+              ✓ Thank you for subscribing! Check your email for your special discount.
+            </div>
+          ) : (
+            <form onSubmit={handleNewsletterSubmit} style={{ display: 'flex', gap: 12, maxWidth: 500, margin: '0 auto' }}>
+              <input
+                type="email"
+                placeholder="Enter your email address"
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
+                className="form-input"
+                style={{ borderRadius: 'var(--radius-pill)', padding: '14px 20px' }}
+                required
+              />
+              <button type="submit" className="btn btn-dark" style={{ borderRadius: 'var(--radius-pill)', padding: '14px 28px' }}>
+                Subscribe
+              </button>
+            </form>
+          )}
         </div>
-
-        {contactSuccess && (
-          <div className={`alert alert-${contactSuccess.includes('Error') ? 'error' : 'success'}`} style={{ marginBottom: 24 }}>
-            {contactSuccess}
-          </div>
-        )}
-
-        <form onSubmit={handleContactSubmit} className="card" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, padding: 32 }}>
-          <div className="form-group">
-            <label className="form-label">Your Name</label>
-            <input type="text" className="form-input" value={contactForm.name} onChange={e => setContactForm(p => ({ ...p, name: e.target.value }))} required />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Email Address</label>
-            <input type="email" className="form-input" value={contactForm.email} onChange={e => setContactForm(p => ({ ...p, email: e.target.value }))} required />
-          </div>
-          <div className="form-group" style={{ gridColumn: 'span 2' }}>
-            <label className="form-label">Subject</label>
-            <input type="text" className="form-input" value={contactForm.subject} onChange={e => setContactForm(p => ({ ...p, subject: e.target.value }))} required />
-          </div>
-          <div className="form-group" style={{ gridColumn: 'span 2' }}>
-            <label className="form-label">Your Message</label>
-            <textarea className="form-input" style={{ minHeight: 120, fontFamily: 'inherit', resize: 'vertical' }} value={contactForm.message} onChange={e => setContactForm(p => ({ ...p, message: e.target.value }))} required />
-          </div>
-          <div style={{ gridColumn: 'span 2', display: 'flex', justifyContent: 'flex-end' }}>
-            <button type="submit" className="btn btn-primary" style={{ background: 'linear-gradient(135deg, #d4af37, #aa820a)', border: 'none', color: '#000', fontWeight: 700 }} disabled={contactLoading}>
-              {contactLoading ? 'Sending…' : 'Send message'}
-            </button>
-          </div>
-        </form>
       </section>
+
     </div>
   )
 }

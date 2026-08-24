@@ -1,69 +1,76 @@
-import { usePage } from '@inertiajs/react'
-import logoFallback from '@/assets/logo.jpg'
+import { Link } from '@inertiajs/react'
 import UserLayout from '@/layouts/UserLayout'
+import aboutVisionBanner from '@/assets/about_vision_mission.jpg'
+import productSilk from '@/assets/product_silk.jpg'
+import productVelvet from '@/assets/product_velvet.jpg'
 
 export default function About() {
-  const { settings = {} } = usePage().props
-
-  const aboutTitle = settings.about_us_title || 'The Story of Libas-E-Maryam'
-  const aboutContent = settings.about_us_content || 'Traditional Eastern attire crafted with luxury textiles and delicate hand-embellished zari thread works. Libas-E-Maryam brings you a heritage of traditional artistry. Specialized in high-end tailored lehengas, hand-worked velvet shawls, and premium embroidered cotton lawn, our mission is to create royal Eastern ensembles that reflect luxury and comfort.'
-  const aboutImage = settings.about_us_image || '/assets/product_silk.jpg'
-  const companyName = settings.company_name || 'Libas-E-Maryam'
-
   return (
-    <div style={{ padding: '60px 20px', background: 'var(--bg-light)', minHeight: 'calc(100vh - 74px)' }}>
-      <div style={{ maxWidth: 960, margin: '0 auto' }}>
-        
-        {/* Page Header */}
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <span style={{ fontSize: '0.8rem', color: '#b89028', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 700 }}>About Our Boutique</span>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.5rem', marginTop: 8, color: 'var(--text-primary)' }}>
-            {aboutTitle}
-          </h1>
-          <div style={{ width: 60, height: 2, background: '#d4af37', margin: '20px auto 0' }} />
-        </div>
+    <div style={{ maxWidth: 1320, margin: '0 auto', padding: '60px 24px 100px' }}>
 
-        {/* Brand Story Presentation */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 48, alignItems: 'center' }}>
-          
-          {/* Image Container with Elegant Border */}
-          <div style={{ position: 'relative' }}>
-            <div style={{
-              position: 'absolute', top: -12, left: -12, right: 12, bottom: 12,
-              border: '2px solid rgba(212, 175, 55, 0.25)', borderRadius: 'var(--radius)',
-              zIndex: 1
-            }} />
-            <img
-              src={aboutImage}
-              alt="Boutique Lookbook"
-              style={{
-                width: '100%', height: 420, objectFit: 'cover',
-                borderRadius: 'var(--radius)', position: 'relative', zIndex: 2,
-                boxShadow: 'var(--shadow)'
-              }}
-            />
-          </div>
-
-          {/* Story Text */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.6rem', color: '#b89028' }}>
-              Crafting Heritage Since Day One
-            </h2>
-            <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: 1.8, whiteSpace: 'pre-line' }}>
-              {aboutContent}
-            </p>
-            <div style={{ borderTop: '1px solid var(--border)', paddingTop: 20, marginTop: 10, display: 'flex', alignItems: 'center', gap: 14 }}>
-              <img src={settings.company_logo || logoFallback} alt="Medallion" style={{ width: 44, height: 44, borderRadius: '50%', border: '1px solid #d4af37' }} />
-              <div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>{companyName}</div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Established Traditional Tailoring</div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
+      {/* Editorial Header */}
+      <div style={{ textAlign: 'center', maxWidth: 800, margin: '0 auto 48px' }}>
+        <span className="eyebrow-badge">THE STORY OF LIBAS-E-MARYAM</span>
+        <h1 className="font-display" style={{ fontSize: '3.2rem', marginTop: 12, marginBottom: 20, lineHeight: 1.15 }}>
+          Our Vision & Mission: A Legacy of Timeless Elegance.
+        </h1>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', lineHeight: 1.7 }}>
+          Crafting heirlooms that celebrate our rich heritage for Libas-E-Maryam.
+        </p>
       </div>
+
+      {/* Hero Showcase Image (User Uploaded Vision & Mission Banner) */}
+      <div style={{ width: '100%', borderRadius: 'var(--radius-lg)', overflow: 'hidden', marginBottom: 80, border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-lg)' }}>
+        <img
+          src={aboutVisionBanner}
+          alt="Our Vision & Mission: A Legacy of Timeless Elegance - Libas-E-Maryam Bridal Couture"
+          style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }}
+        />
+      </div>
+
+      {/* Vision & Mission Highlight Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 40, marginBottom: 80 }}>
+        <div className="product-card" style={{ padding: 40, borderLeft: '4px solid var(--primary-sage)' }}>
+          <span className="eyebrow-badge" style={{ marginBottom: 12 }}>OUR VISION</span>
+          <h3 className="font-display" style={{ fontSize: '1.6rem', marginBottom: 14, color: 'var(--text-primary)' }}>
+            Definitive Global Voice
+          </h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '1.02rem', lineHeight: 1.8 }}>
+            To be the definitive global voice for Pakistani bridal artistry, crafting heirlooms that celebrate our rich heritage for Libas-E-Maryam.
+          </p>
+        </div>
+
+        <div className="product-card" style={{ padding: 40, borderLeft: '4px solid var(--accent-gold-sage)' }}>
+          <span className="eyebrow-badge" style={{ marginBottom: 12, backgroundColor: 'rgba(197, 160, 89, 0.15)', color: '#C5A059' }}>OUR MISSION</span>
+          <h3 className="font-display" style={{ fontSize: '1.6rem', marginBottom: 14, color: 'var(--text-primary)' }}>
+            Empowering Every Bride
+          </h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '1.02rem', lineHeight: 1.8 }}>
+            To empower every bride to realize her dream with bespoke craftsmanship, uncompromising quality, and a deeply personalized experience, guided by the Libas-E-Maryam ethos.
+          </p>
+        </div>
+      </div>
+
+      {/* Founder Statement Section */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 60, alignItems: 'center', backgroundColor: '#fff', border: '1px solid var(--border-color)', padding: 48, borderRadius: 'var(--radius-xl)' }}>
+        <div>
+          <span className="eyebrow-badge" style={{ marginBottom: 12 }}>HERITAGE CRAFTSMANSHIP</span>
+          <h2 className="font-display" style={{ fontSize: '2.2rem', marginBottom: 20 }}>
+            "Attire should celebrate your heritage with graceful modern elegance."
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.98rem', lineHeight: 1.8, marginBottom: 24 }}>
+            We created Libas-E-Maryam to provide discerning women with authentic luxury Pakistani suits, bridal lehengas, and festive velvet collections tailored to perfection.
+          </p>
+          <Link href="/products" className="btn btn-primary btn-lg" style={{ borderRadius: 'var(--radius-pill)' }}>
+            Explore Festive Collection →
+          </Link>
+        </div>
+
+        <div>
+          <img src={productVelvet} alt="Libas-E-Maryam Craftsmanship" style={{ width: '100%', borderRadius: 'var(--radius-md)', objectFit: 'cover' }} />
+        </div>
+      </div>
+
     </div>
   )
 }

@@ -1,60 +1,53 @@
 import { Link } from '@inertiajs/react'
 import UserLayout from '@/layouts/UserLayout'
+import productSilk from '@/assets/product_silk.jpg'
 
 export default function Categories({ categories = [] }) {
   return (
-    <div style={{ padding: '60px 40px', maxWidth: 1200, margin: '0 auto' }}>
+    <div style={{ padding: '60px 24px 100px', maxWidth: 1320, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 48 }}>
-        <span className="gold-accent" style={{ textTransform: 'uppercase', letterSpacing: '0.12em', fontSize: '0.78rem', fontWeight: 700 }}>Collections</span>
-        <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.5rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: 10 }}>
-          Browse by Category
+        <span className="eyebrow-badge">LIBAS-E-MARYAM COLLECTIONS</span>
+        <h1 className="font-display" style={{ fontSize: '2.8rem', marginTop: 10, marginBottom: 8 }}>
+          Browse Boutique Categories
         </h1>
-        <p style={{ color: 'var(--text-secondary)', marginTop: 8, fontSize: '0.95rem' }}>
-          Select a category to view our customized hand-crafted collections.
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+          Select your preferred fabric edit and hand-embellished boutique suit collections.
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 32 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 32 }}>
         {categories.map(cat => (
           <Link
             key={cat.id}
             href={`/products?category=${cat.slug}`}
-            className="card"
+            className="product-card"
             style={{
               padding: 0,
               overflow: 'hidden',
-              border: '1px solid var(--border)',
-              display: 'flex',
-              flexDirection: 'column',
-              transition: 'var(--transition)',
-              cursor: 'pointer',
+              height: 420,
               textDecoration: 'none'
             }}
-            onMouseEnter={e => {
-              e.currentTarget.style.borderColor = '#d4af37'
-              e.currentTarget.style.transform = 'translateY(-4px)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.borderColor = 'var(--border)'
-              e.currentTarget.style.transform = 'none'
-            }}
           >
-            <div style={{ height: 320, position: 'relative', overflow: 'hidden' }}>
-              <img src={cat.image || '/assets/product_silk.jpg'} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+              <img src={cat.image || productSilk} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               <div style={{
-                position: 'absolute', inset: 0,
-                background: 'linear-gradient(to top, rgba(10,12,20,0.9) 0%, rgba(10,12,20,0.1) 100%)'
-              }} />
-              <div style={{ position: 'absolute', bottom: 20, left: 20 }}>
-                <span className="gold-accent" style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>Libas-E-Maryam</span>
-                <h3 style={{ fontSize: '1.25rem', fontFamily: "'Playfair Display', serif", color: '#fff', fontWeight: 600, marginTop: 4 }}>{cat.name}</h3>
+                position: 'absolute',
+                inset: 0,
+                background: 'linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(12,26,46,0.92) 100%)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-end',
+                padding: 28
+              }}>
+                <span className="eyebrow-badge" style={{ backgroundColor: 'rgba(197, 160, 89, 0.95)', color: '#0C1A2E', width: 'fit-content', marginBottom: 8 }}>
+                  BOUTIQUE EDIT
+                </span>
+                <h3 style={{ color: '#fff', fontSize: '1.45rem', fontWeight: 700, marginBottom: 6 }}>{cat.name}</h3>
+                <p style={{ color: '#E2E8F0', fontSize: '0.85rem', marginBottom: 16, lineHeight: 1.5 }}>{cat.description}</p>
+                <span className="btn btn-outline btn-sm" style={{ color: '#fff', borderColor: '#fff', width: 'fit-content', borderRadius: 'var(--radius-pill)' }}>
+                  Explore Collection →
+                </span>
               </div>
-            </div>
-            <div style={{ padding: 20, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 16 }}>
-                {cat.description || 'Premium hand-stitched traditional wear made from the highest quality fabrics.'}
-              </p>
-              <span style={{ fontSize: '0.82rem', color: '#d4af37', fontWeight: 700 }}>Explore Collection →</span>
             </div>
           </Link>
         ))}

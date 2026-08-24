@@ -20,7 +20,9 @@ class Product extends Model
         'price',
         'sale_price',
         'is_on_sale',
+        'is_featured',
         'stock',
+        'sku',
         'image'
     ];
 
@@ -28,6 +30,7 @@ class Product extends Model
         'price' => 'float',
         'sale_price' => 'float',
         'is_on_sale' => 'boolean',
+        'is_featured' => 'boolean',
         'stock' => 'integer'
     ];
 

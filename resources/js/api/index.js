@@ -15,13 +15,12 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      const url = error.config?.url || '';
-      // Only redirect if it is NOT the current user metadata endpoint
-      if (url !== '/user' && url !== 'user' && !url.endsWith('/user')) {
-        window.location.href = '/login';
+      const url = error.config?.url || ''
+      if (url.includes('/admin/') || url.includes('/user/')) {
+        window.location.href = '/login'
       }
     }
-    return Promise.reject(error);
+    return Promise.reject(error)
   }
 )
 
